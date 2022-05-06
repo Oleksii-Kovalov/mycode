@@ -8,8 +8,15 @@ def parity_checker() -> None:
     # write your code here
     pass
 
-
 parity_checker()
 print("bla bla bla!!!! "*10)
 
-print("------------------ "*20)
+
+print("--------- N+M --------- ")
+
+N=9999
+M=123
+print(N + M)
+print("N + M = {}".format(N + M))
+
+print("--------- Ok! --------- ")

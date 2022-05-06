@@ -9,3 +9,7 @@ def remove_vowels(document: str) -> str:
 
     # write your code here
     pass
+
+print("START")
+remove_vowels()
+print("END")
