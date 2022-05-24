@@ -13,6 +13,9 @@ def index():
         pprint.pprint(request.form['Phonenumber'])
 
         pprint.pprint(request.form)
+
+        #mysql code here
+        
     return render_template('bla.html')
 
 
