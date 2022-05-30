@@ -5,28 +5,34 @@ import pprint
 
 app = Flask(__name__)
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
 
+def get_all_clients(cursor):
+            cursor.execute("""SELECT ClientID, name FROM `clients` """)
+            names = cursor.fetchall()
+            pprint.pprint(names)
+            client_names=[]
 
-    if request.method == 'POST':
+            for (name) in names:
+                ttt = {'id': name[0], 'name': name[1]}
+                pprint.pprint(name)
+                print("vasja ttt")
+                pprint.pprint(ttt)
+                client_names.append(ttt)
+            print("vasja CLIENT")
+            pprint.pprint(client_names)
 
-        pprint.pprint(request.form['firstName'])
-        pprint.pprint(request.form['lastName'])
-        pprint.pprint(request.form['username'])
-        pprint.pprint(request.form['email'])
-        pprint.pprint(request.form['Phonenumber'])
+            return client_names
 
-        pprint.pprint(request.form)
+def get_client(cursor, clientid):
 
-        #mysql code here
+    query = "SELECT * FROM `clients` where ClientID = \"" + str(int(clientid)) + "\""
+    print(query)
+    cursor.execute(query)
+    clients = cursor.fetchall()
 
-    if request.method == 'GET':
-        conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
-        cursor = conn.cursor()
-        cursor.execute("""SELECT * FROM `clients` where ClientID = '3'""")
-        clients = cursor.fetchall()
+    (firstName, secondName, username, email, phone, sex) = ('absent', 'absent','absent','absent','absent','absent')
 
+    if len(clients) > 0:
         firstName = clients[0][1]
         secondName = clients[0][2]
         username = clients[0][3]
@@ -34,25 +40,23 @@ def index():
         phone = clients[0][5]
         sex = clients[0][6]
 
-        cursor.execute("""SELECT ClientID, name FROM `clients` """)
-        names = cursor.fetchall()
-        pprint.pprint(names)
-        client_names=[]
-        ''' client_names=[{'id': '1', 'name': 'Vasya'},
-                {'id': '2', 'name': 'Petya'},
-                {'id': '3', 'name': 'Masha'}
-            ]
-        '''
-        for (name) in names:
-            ttt = {'id': name[0], 'name': name[1]}
-            pprint.pprint(name)
-            print("vasja ttt")
-            pprint.pprint(ttt)
-            client_names.append(ttt)
-        print("vasja CLIENT")
-        pprint.pprint(client_names)
+    return firstName, secondName, username, email, phone, sex
 
-        return render_template('bla.html',
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+
+    client_names = get_all_clients(cursor)
+
+    if request.method == 'GET':
+        (firstName, secondName, username, email, phone, sex) = get_client(cursor, 0)
+
+    if request.method == 'POST':
+        id_id_id = request.form['clientId']
+        (firstName, secondName, username, email, phone, sex) = get_client(cursor, id_id_id)
+
+    return render_template('bla.html',
             firstName=firstName,
             secondName=secondName,
             username=username,
@@ -61,9 +65,12 @@ def index():
             sex=sex,
             client_names=client_names)
 
+
+'''
 @app.route('/load', methods=['POST'])
 def load():
-
+    conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
     print("\n\n request object:")
     pprint.pprint(request)
 
@@ -72,11 +79,24 @@ def load():
 
     id_id_id = request.form['clientId']
     bb = request.form['address2']
-    message = """sdd----- clientID: {} \n\n\n mbhgbjhgjh \n\n\n adress2: {},
-        \n\n\n req:{}""".format(id_id_id, bb, mmm)
 
-    return message
-    #render_template('bla.html')
+    (firstName, secondName, username, email, phone, sex) = get_client(cursor, id_id_id)
+    print( get_client(cursor, id_id_id) )
+
+
+
+    message = """sdd----- clientID: {} \n\n\n mbhgbjhgjh \n\n\n adress2: {}""".format(id_id_id, bb)
+
+    return render_template('bla.html',
+        firstName=firstName,
+        secondName=secondName,
+        username=username,
+        email=email,
+        phone=phone,
+        sex=sex,
+        client_names = get_all_clients(cursor))
+            #render_template('bla.html')
+'''
 
 @app.route('/home', methods=['GET'])
 def home():
