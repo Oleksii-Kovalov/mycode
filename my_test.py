@@ -8,12 +8,9 @@ get_client('hui', 3)
 
 
 
-if request.method == 'POST':
-
-    pprint.pprint(request.form['firstName'])
-    pprint.pprint(request.form['lastName'])
-    pprint.pprint(request.form['username'])
-    pprint.pprint(request.form['email'])
-    pprint.pprint(request.form['Phonenumber'])
-
-    pprint.pprint(request.form)
+def change_client(cursor, conn, firstName, secondName, username, email, phone, sex):
+            change = "update clients set Name = " + str(firstName) + ", Surname = " + str(firstName) + ", Username = " + str(firstName) + ", email = " + str(firstName) + ", phone = " + str(firstName) + ", sex = " + str(firstName)" where ClientID = \"" + str(int(clientid)) + "\""
+            cursor.execute(change)
+            conn.commit()
+            pprint.pprint(change)
+            return

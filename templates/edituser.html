@@ -72,8 +72,7 @@
 									    <div class="col-sm-7">
 												<select name="clientId" class="form-control">
 													{% for nnn in client_names %}
-													"{{ nnn['id'] }}"
-	                        		<option value="{{ nnn['id'] }}" {% if nnn.id == id_id_id %} selected="true" {% endif %}> {{ nnn['name'] }}</option>
+	                        		<option value="{{ nnn['id'] }}"> {{ nnn['name'] }}</option>
 													{% endfor %}
 
 	                      </select>
@@ -85,12 +84,7 @@
 
 									<div class="raw">&nbsp;</div>
 
-								  <b class="text-danger"> {% if saved == 'true' %} Saved Succes {% endif %} </b>
-
 									<form method="post" name="form1" id="updatedata" action="/edituser">
-
-										<input type="hidden" class="form-control" id="clientId" name="clientId" value='{{ id_id_id }}'>
-
 										<div class="col-sm-6">
 											<label for="firstName" class="form-label">First name</label>
 											<input type="text" class="form-control" id="firstName" name="firstName" placeholder="Name" value='{{ firstName }}' required="">
@@ -126,7 +120,7 @@
 										</div>
 										<div class="col-sm-6">
 											<label for="Phonenumber" class="form-label">Phone number</label>
-											<input type="text" class="form-control" id="phone" name="phone" placeholder="+380" value="{{ phone }}" required="">
+											<input type="text" class="form-control" id="Phonenumber" name="Phonenumber" placeholder="+380" value="{{ phone }}" required="">
 											<div class="invalid-feedback">
 												Please add your phone number.
 											</div>
@@ -136,11 +130,11 @@
 											<hr class="my-4">
 											<h4 class="mb-3">Sex</h4> {{ sex }}
 											<div class="form-check radio-inline">
-												<input id="sex" name="sex" type="radio" class="form-check-input" {% if sex=='male' %} checked="" {% endif %} required="" value="male">
+												<input id="credit" name="paymentMethod" type="radio" class="form-check-input" {% if sex=='male' %} checked="" {% endif %} required="">
 												<label class="form-check-label" for="credit">Male</label>
 											</div>
 											<div class="form-check radio-inline">
-												<input id="sex" name="sex" type="radio" class="form-check-input" {% if sex=='female' %} checked="" {% endif %} required=" "value="female">
+												<input id="debit" name="paymentMethod" type="radio" class="form-check-input" {% if sex=='female' %} checked="" {% endif %} required="">
 												<label class="form-check-label" for="debit">Female</label>
 											</div>
 											<hr class="my-4">
