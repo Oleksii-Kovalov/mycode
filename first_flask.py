@@ -283,6 +283,7 @@ def delete_client():
         return response
 
     clientid = int(request.args.get("id"))
+
     (firstName, secondName, username, email, phone, sex) = get_client(cursor, clientid)
     if firstName == "absent":
         response = make_response(jsonify("Client not found"))
