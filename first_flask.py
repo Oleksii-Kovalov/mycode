@@ -52,7 +52,7 @@ def index():
         id_id_id = int(request.form['clientId'])
         (firstName, secondName, username, email, phone, sex) = get_client(cursor, id_id_id)
 
-    response = make_response(render_template('bla.html',
+    templatehui = render_template('bla.html',
             firstName=firstName,
             secondName=secondName,
             username=username,
@@ -61,7 +61,9 @@ def index():
             sex=sex,
             id_id_id=id_id_id,
             saved=saved,
-            client_names=client_names))
+            client_names=client_names)
+
+    response = make_response(templatehui)
     response.delete_cookie('saved')
     cursor.close()
     conn.close()
@@ -69,9 +71,49 @@ def index():
     return response
 
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+    username = request.form.get('Username', 'hui')
+    password = request.form.get('Password', 'huilo')
+
+    if username == 'hui':
+        action = 'perviy_vhod'
+        return render_template('profile.html', action=action)
+
+    admin_data_query = "select Password from `admins` where Username = \"" + username + "\""
+
+    cursor.execute(admin_data_query)
+    admindata = cursor.fetchall()
+    if len(admindata)==0:
+        action = "not correct login"
+        return render_template('profile.html', action=action)
+
+
+    loginseccesful = "None"
+
+    if admindata[0][0] == password:
+        loginseccesful = "Success"
+
+
+    response = make_response(render_template('profile.html', loginseccesful = loginseccesful,))
+    response.set_cookie('loginsuccessfull', loginseccesful)
+    response.set_cookie('loggedusername', username)
+
+
+    return render_template('profile.html', loginseccesful = loginseccesful)
+
+
 @app.route('/edituser', methods=['POST'])
+# @check_login
 def edituser():
-    print("hello world")
+    # 1 get cookies loginsuccessfull
+    # 2 check if logged in
+    # 2.1 success -> run main code
+    # 2.2 error -> redirect to login page
+
+
     conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
     cursor = conn.cursor()
 
@@ -97,6 +139,49 @@ def edituser():
         + "\""
     print(change)
     cursor.execute(change)
+    conn.commit()
+
+    response = make_response(redirect("/", code=302))
+    response.set_cookie('saved', 'true')
+    cursor.close()
+    conn.close()
+
+    return response
+
+@app.route('/deleteuser', methods=['DELETE'])
+def deleteuser():
+    conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+    clientid = request.form.get('clientId', 'hui')
+    delete = "delete from clients where ClientID = \"" + str(int(clientid)) \
+        + "\""
+    print(delete)
+    cursor.execute(delete)
+    conn.commit()
+
+
+@app.route('/registration', methods=['POST'])
+def adduser():
+    conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
+    cursor = conn.cursor()
+
+    firstName = request.form.get('firstName', 'hui')
+    secondName = request.form.get('lastName', 'hui')
+    username = request.form.get('username', 'hui')
+    email = request.form.get('email', 'hui')
+    phone = request.form.get('phone', 'hui')
+    sex = request.form.get('sex', 'hui')
+
+
+    add = "insert into clients (Name,Surname,Username,email,phone,sex) values (\'" + str(firstName) + "\'" \
+        + ",\'" + str(secondName) + "\'" \
+        + ",\'" + str(username) + "\'" \
+        + ",\'" + str(email) + "\'" \
+        + ",\'" + str(phone) + "\'" \
+        + ",\'" + str(sex) + "\')" \
+
+    print(add)
+    cursor.execute(add)
     conn.commit()
 
     response = make_response(redirect("/", code=302))
