@@ -35,8 +35,16 @@ def get_client(cursor, clientid):
 
     return firstName, secondName, username, email, phone, sex
 
+def login_required(request):
+    loggedin = request.cookies.get('loginsuccessful')
+    if loggedin != "Success":
+        return redirect('/profile')
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    loggedin = request.cookies.get('loginsuccessful')
+    if loggedin != "Success":
+        return redirect('/profile')
     conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
     cursor = conn.cursor()
 
@@ -94,15 +102,16 @@ def profile():
     loginseccesful = "None"
 
     if admindata[0][0] == password:
-        loginseccesful = "Success"
+        loginsuccessful = "Success"
 
 
-    response = make_response(render_template('profile.html', loginseccesful = loginseccesful,))
-    response.set_cookie('loginsuccessfull', loginseccesful)
-    response.set_cookie('loggedusername', username)
+    response = make_response(render_template('profile.html', loginsuccessful = loginsuccessful,))
+    response.set_cookie('loginsuccessful', loginsuccessful, max_age=60*60*24*3)
+    response.set_cookie('loggedusername', username, max_age=60*60*24*3)
+    cursor.close()
+    conn.close()
 
-
-    return render_template('profile.html', loginseccesful = loginseccesful)
+    return response
 
 
 @app.route('/edituser', methods=['POST'])
@@ -113,7 +122,9 @@ def edituser():
     # 2.1 success -> run main code
     # 2.2 error -> redirect to login page
 
-
+    loggedin = request.cookies.get('loginsuccessful')
+    if loggedin != "Success":
+        return redirect('/profile')
     conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
     cursor = conn.cursor()
 
@@ -150,6 +161,10 @@ def edituser():
 
 @app.route('/deleteuser', methods=['DELETE'])
 def deleteuser():
+    loggedin = request.cookies.get('loginsuccessful')
+    if loggedin != "Success":
+        print("hernja")
+        return redirect('/profile')
     conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
     cursor = conn.cursor()
     clientid = request.form.get('clientId', 'hui')
@@ -160,8 +175,12 @@ def deleteuser():
     conn.commit()
 
 
-@app.route('/registration', methods=['POST'])
+@app.route('/registration', methods=['GET', 'POST'])
 def adduser():
+    loggedin = request.cookies.get('loginsuccessful')
+    if loggedin != "Success":
+        return redirect('/profile')
+
     conn = mysql.connector.connect(host="127.0.0.1", user="user_one", password="1q2w3e4r", database="Someweres", auth_plugin='mysql_native_password')
     cursor = conn.cursor()
 
